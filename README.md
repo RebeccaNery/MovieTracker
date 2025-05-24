@@ -66,5 +66,6 @@ Contribuições são bem-vindas! Sinta-se livre para abrir issues ou pull reques
 Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
 
 ## 👩‍💻 Autora
-Rebecca Nery
-GitHub • LinkedIn
+
+**Rebecca Nery**  
+[LinkedIn](https://www.linkedin.com/in/rebecca-nery) • [GitHub](https://github.com/RebeccaNery)
