@@ -9,7 +9,7 @@ Um aplicativo Flutter para gerenciar seu catálogo pessoal de filmes. Com o Movi
 - ✅ Cadastro de filmes com título, gênero, ano e nota
 - 🎞 Listagem de todos os filmes cadastrados
 - ✏️ Edição e remoção de filmes
-- 🔍 Busca rápida por título (opcional, se tiver)
+- 🔍 Busca rápida por título
 - 💾 Armazenamento local usando `sqflite`
 
 ---
@@ -52,8 +52,6 @@ flutter run
 ```
 ## 📂 Estrutura do Projeto
 ```css
-Copiar
-Editar
 lib/
 ├── main.dart
 ├── models/
