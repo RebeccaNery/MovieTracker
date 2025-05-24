@@ -66,6 +66,11 @@ Contribuições são bem-vindas! Sinta-se livre para abrir issues ou pull reques
 Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
 
 
+
+
+
+
+
 <h2 align="center">👩‍💻 Autora</h2>
 <p align="center">
   <strong>Rebecca Nery</strong><br>
