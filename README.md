@@ -69,3 +69,10 @@ Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes
 
 **Rebecca Nery**  
 [LinkedIn](https://www.linkedin.com/in/rebecca-nery) • [GitHub](https://github.com/RebeccaNery)
+
+<h2 align="center">👩‍💻 Autora</h2>
+<p align="center">
+  <strong>Rebecca Nery</strong><br>
+  <a href="https://www.linkedin.com/in/rebecca-nery">LinkedIn</a> • 
+  <a href="https://github.com/RebeccaNery">GitHub</a>
+</p>
