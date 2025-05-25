@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../model/filme.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class ListarFilmes extends StatefulWidget {
   const ListarFilmes({super.key});
@@ -15,8 +16,8 @@ class _ListarFilmesState extends State<ListarFilmes> {
     urlImagem: 'https://upload.wikimedia.org/wikipedia/pt/8/84/AOrigemPoster.jpg',
     genero: 'Ficção Científica',
     faixaEtaria: '12+',
-    duracao: '148 min',
-    pontuacao: 8.8,
+    duracao: '2h 28min',
+    pontuacao: 9,
     descricao: 'Um ladrão que rouba segredos corporativos por meio da tecnologia de compartilhamento de sonhos é encarregado de plantar uma ideia na mente de um C.E.O.',
     ano: '2010',
   ),
@@ -26,8 +27,8 @@ class _ListarFilmesState extends State<ListarFilmes> {
       urlImagem: 'https://m.media-amazon.com/images/M/MV5BMmUwMmFlMzktYWVlNy00N2I0LWFhMTYtZWI2ZTM4N2I3ZTk0XkEyXkFqcGc@._V1_.jpg',
       genero: 'Ficção Científica',
       faixaEtaria: '10+',
-      duracao: '169 min',
-      pontuacao: 8.6,
+      duracao: '2h 49min',
+      pontuacao: 8,
       descricao: 'Uma equipe de exploradores viaja através de um buraco de minhoca no espaço na tentativa de garantir a sobrevivência da humanidade.',
       ano: '2014',
     ),
@@ -37,8 +38,8 @@ class _ListarFilmesState extends State<ListarFilmes> {
       urlImagem: 'https://br.web.img3.acsta.net/medias/nmedia/18/90/95/96/20122166.jpg',
       genero: 'Drama',
       faixaEtaria: '18+',
-      duracao: '139 min',
-      pontuacao: 8.8,
+      duracao: '2h 19min',
+      pontuacao: 3,
       descricao: 'Um homem insatisfeito com a vida e com seu trabalho encontra um novo sentido ao participar de um clube de luta underground.',
       ano: '1999',
     )];
@@ -84,24 +85,37 @@ class _ListarFilmesState extends State<ListarFilmes> {
   }
 
   Widget buildItemList(int index){
-    return Container(
+
+    final double numEstrelas = (_filmes[index].pontuacao/10 * 5);
+
+    return Card(
       margin: EdgeInsets.all(8.0),
-      //color: Colors.pink,
-      child: Row(
-        //crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Image.network(_filmes[index].urlImagem, width: 150,),
-          SizedBox(child: ColoredBox(color: Colors.green,), width: 20,),
-          Column(
-            //mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(_filmes[index].titulo, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              Text(_filmes[index].genero),
-              Text(_filmes[index].faixaEtaria),
-            ],
-          )
-          ]
+      elevation: 4,
+      child: SizedBox(
+        height: 200,
+        child: Row(
+          children: [
+            Container(margin: EdgeInsets.all(5.0), child: Image.network(_filmes[index].urlImagem, width: 150,)),
+            const SizedBox(width: 16),
+            Container(margin: EdgeInsets.all(5.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(_filmes[index].titulo, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  Text(_filmes[index].genero),
+                  Text(_filmes[index].duracao),
+                  const SizedBox(width: 8),
+                  const Spacer(),
+                  RatingBar.builder(itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber), onRatingUpdate: (rating){
+                    print(rating);
+                  }, ignoreGestures: true,
+                    initialRating: numEstrelas, minRating: 0, direction: Axis.horizontal, allowHalfRating: true, itemCount: 5, itemSize: 20,),
+
+                ],
+              ),
+            )
+            ]
+        ),
       ),
     );
   }
