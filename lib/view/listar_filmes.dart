@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../model/filme.dart';
 
 class ListarFilmes extends StatefulWidget {
   const ListarFilmes({super.key});
@@ -8,15 +9,69 @@ class ListarFilmes extends StatefulWidget {
 }
 
 class _ListarFilmesState extends State<ListarFilmes> {
-  List<Filme> _filmes = [];
-
+  final List<Filme> _filmes = [Filme(
+    id: 1,
+    titulo: 'A Origem',
+    urlImagem: 'https://upload.wikimedia.org/wikipedia/pt/8/84/AOrigemPoster.jpg',
+    genero: 'Ficção Científica',
+    faixaEtaria: '12+',
+    duracao: '148 min',
+    pontuacao: 8.8,
+    descricao: 'Um ladrão que rouba segredos corporativos por meio da tecnologia de compartilhamento de sonhos é encarregado de plantar uma ideia na mente de um C.E.O.',
+    ano: '2010',
+  ),
+    Filme(
+      id: 2,
+      titulo: 'Interestelar',
+      urlImagem: 'https://m.media-amazon.com/images/M/MV5BMmUwMmFlMzktYWVlNy00N2I0LWFhMTYtZWI2ZTM4N2I3ZTk0XkEyXkFqcGc@._V1_.jpg',
+      genero: 'Ficção Científica',
+      faixaEtaria: '10+',
+      duracao: '169 min',
+      pontuacao: 8.6,
+      descricao: 'Uma equipe de exploradores viaja através de um buraco de minhoca no espaço na tentativa de garantir a sobrevivência da humanidade.',
+      ano: '2014',
+    ),
+    Filme(
+      id: 3,
+      titulo: 'Clube da Luta',
+      urlImagem: 'https://br.web.img3.acsta.net/medias/nmedia/18/90/95/96/20122166.jpg',
+      genero: 'Drama',
+      faixaEtaria: '18+',
+      duracao: '139 min',
+      pontuacao: 8.8,
+      descricao: 'Um homem insatisfeito com a vida e com seu trabalho encontra um novo sentido ao participar de um clube de luta underground.',
+      ano: '1999',
+    )];
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Lista de Filmes"),
+        title: const Text("Filmes"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Informações do Desenvolvedor'),
+                    content: const Text('Desenvolvido por: Anita Donato, Rebecca Nery e Ruan Vitor'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Fecha o AlertDialog
+                        },
+                        child: const Text('Ok'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+          )]
       ),
       body: ListView.builder(itemCount: _filmes.length,itemBuilder: (context, index){
         return buildItemList(index);
@@ -29,16 +84,25 @@ class _ListarFilmesState extends State<ListarFilmes> {
   }
 
   Widget buildItemList(int index){
-    return ListTile(
-      leading: Image.network(_filmes[index].urlImagem),
-      title: Text(_filmes[index].titulo),
-      subtitle: Column(
+    return Container(
+      margin: EdgeInsets.all(8.0),
+      //color: Colors.pink,
+      child: Row(
+        //crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(_filmes[index].genero),
-          Text(_filmes[index].ano),
-        ],
+          Image.network(_filmes[index].urlImagem, width: 150,),
+          SizedBox(child: ColoredBox(color: Colors.green,), width: 20,),
+          Column(
+            //mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(_filmes[index].titulo, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              Text(_filmes[index].genero),
+              Text(_filmes[index].faixaEtaria),
+            ],
+          )
+          ]
       ),
-      trailing: Icon(Icons.star),
     );
   }
 }
