@@ -16,6 +16,15 @@ class _DetalheFilmeState extends State<DetalheFilme> {
       ),
       body: Container(
         margin: EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Image.network("https://br.web.img3.acsta.net/medias/nmedia/18/90/95/96/20122166.jpg", width: 200,),
+            SizedBox(height: 20,),
+            Text("Clube da Luta", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold), textAlign: TextAlign.left,),
+            SizedBox(height: 20,),
+            Text("Sinopse")
+          ],
+        ),
       )
     );
   }
