@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../model/filme.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class DetalheFilme extends StatefulWidget {
   final Filme filme;
@@ -30,14 +31,39 @@ class _DetalheFilmeState extends State<DetalheFilme> {
           children: [
             Image.network(_filme.urlImagem, width: 200,),
             Padding(
+
                 padding: const EdgeInsets.all(20),
                 child: Column(children: [
-              SizedBox(height: 20,),
-              Text(_filme.titulo, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold), textAlign: TextAlign.left,),
-              SizedBox(height: 20,),
-              Text(_filme.genero),
-              SizedBox(height: 20,),
-              Text(_filme.descricao)
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,                children: [
+                  Text(_filme.titulo, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold), textAlign: TextAlign.left,),
+                  Text(_filme.ano)
+                ],
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(_filme.genero), Text(_filme.faixaEtaria)
+                ],
+              ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(_filme.duracao),
+                      RatingBar.builder(itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber), onRatingUpdate: (rating){
+                        print(rating);
+                      }, ignoreGestures: true,
+                        initialRating: numEstrelas, minRating: 0, direction: Axis.horizontal, allowHalfRating: true, itemCount: 5, itemSize: 20,),
+                    ],
+                  ),
+SizedBox(height: 8,),
+              Row(
+                children: [
+                  Expanded(child: Text(_filme.descricao)),
+                ],
+              )
             ],)
 
             ),
