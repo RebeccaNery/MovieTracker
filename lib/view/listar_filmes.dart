@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie_tracker/view/detalhar_filme.dart';
 import '../model/filme.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
@@ -88,33 +89,38 @@ class _ListarFilmesState extends State<ListarFilmes> {
 
     final double numEstrelas = (_filmes[index].pontuacao/10 * 5);
 
-    return Card(
-      margin: EdgeInsets.all(8.0),
-      elevation: 4,
-      child: SizedBox(
-        height: 200,
-        child: Row(
-          children: [
-            Container(margin: EdgeInsets.all(5.0), child: Image.network(_filmes[index].urlImagem, width: 150,)),
-            const SizedBox(width: 16),
-            Container(margin: EdgeInsets.all(5.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(_filmes[index].titulo, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                  Text(_filmes[index].genero),
-                  Text(_filmes[index].duracao),
-                  const SizedBox(width: 8),
-                  const Spacer(),
-                  RatingBar.builder(itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber), onRatingUpdate: (rating){
-                    print(rating);
-                  }, ignoreGestures: true,
-                    initialRating: numEstrelas, minRating: 0, direction: Axis.horizontal, allowHalfRating: true, itemCount: 5, itemSize: 20,),
+    return GestureDetector(
+      onTap: (){
+        final Filme filmeClicado = _filmes[index];
+        Navigator.push(context, MaterialPageRoute(builder: (context) => DetalheFilme(filme: filmeClicado),),);},
+      child: Card(
+        margin: EdgeInsets.all(8.0),
+        elevation: 4,
+        child: SizedBox(
+          height: 200,
+          child: Row(
+            children: [
+              Container(margin: EdgeInsets.all(5.0), child: Image.network(_filmes[index].urlImagem, width: 150,)),
+              const SizedBox(width: 16),
+              Container(margin: EdgeInsets.all(5.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(_filmes[index].titulo, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                    Text(_filmes[index].genero),
+                    Text(_filmes[index].duracao),
+                    const SizedBox(width: 8),
+                    const Spacer(),
+                    RatingBar.builder(itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber), onRatingUpdate: (rating){
+                      print(rating);
+                    }, ignoreGestures: true,
+                      initialRating: numEstrelas, minRating: 0, direction: Axis.horizontal, allowHalfRating: true, itemCount: 5, itemSize: 20,),
 
-                ],
-              ),
-            )
-            ]
+                  ],
+                ),
+              )
+              ]
+          ),
         ),
       ),
     );
