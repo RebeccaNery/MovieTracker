@@ -19,7 +19,7 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
   final _edtDescricao = TextEditingController();
   final _edtAno = TextEditingController();
   final _filmeController = FilmeController();
-  String _generoSelecionado = '';
+  String? _generoSelecionado;
   final List<String> _opcoesDeGenero = ['Ação', 'Aventura', 'Comédia', 'Drama', 'Ficção Científica', 'Romance', 'Terror'];
 
   @override
@@ -60,7 +60,7 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
                   return null;
                 } ,
               ),
-              DropdownButton<String>(
+              DropdownButtonFormField<String>(
                   hint: Text("Selecione um gênero"),
                   value: _generoSelecionado,
                   onChanged: (String? novoValor){
@@ -74,6 +74,12 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
                       child: Text(genero),
                     );
                   }).toList(),
+                validator: (value){
+                    if (value == null || value.isEmpty){
+                      return "Campo Obrigatório";
+                    }
+                    return null;
+                },
               ),
               TextFormField(
                 controller: _edtDuracao,
@@ -130,7 +136,7 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
 
             final pontuacao = double.tryParse(_edtPontuacao.text) ?? 0.0;
 
-            _filmeController.adicionar(_edtTitulo.text, _edtUrlImagem.text, _generoSelecionado, _edtFaixaEtaria.text, _edtDuracao.text, pontuacao, _edtDescricao.text, _edtAno.text);
+            _filmeController.adicionar(_edtTitulo.text, _edtUrlImagem.text, _generoSelecionado!, _edtFaixaEtaria.text, _edtDuracao.text, pontuacao, _edtDescricao.text, _edtAno.text);
 
             print("Filme adicionado, exibindo SnackBar.");
             ScaffoldMessenger.of(context).showSnackBar(
