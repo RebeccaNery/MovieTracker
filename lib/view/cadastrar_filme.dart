@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../controller/filme_controller.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class CadastrarFilme extends StatefulWidget {
   const CadastrarFilme({super.key});
@@ -13,14 +14,18 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
   final _edtTitulo = TextEditingController();
   final _edtUrlImagem = TextEditingController();
   //final _edtGenero = TextEditingController();
-  final _edtFaixaEtaria = TextEditingController();
+  //final _edtFaixaEtaria = TextEditingController();
   final _edtDuracao = TextEditingController();
-  final _edtPontuacao = TextEditingController();
+  //final _edtPontuacao = TextEditingController();
   final _edtDescricao = TextEditingController();
   final _edtAno = TextEditingController();
   final _filmeController = FilmeController();
   String? _generoSelecionado;
   final List<String> _opcoesDeGenero = ['Ação', 'Aventura', 'Comédia', 'Drama', 'Ficção Científica', 'Romance', 'Terror'];
+  String? _faixaEtariaSelecionada;
+  final List<String> _opcoesDeFaixaEtaria = ['Livre', '10 anos', '12 anos', '14 anos', '16 anos', '18 anos'];
+  double _numEstrelas = 0.0;
+
 
   @override
   Widget build(BuildContext context) {
@@ -38,11 +43,11 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
                 controller: _edtUrlImagem,
                 keyboardType: TextInputType.text,
                 decoration: const InputDecoration(
-                    labelText: "URL para a capa do filme"
+                    labelText: "URL para a imagem de capa"
                 ),
                 validator: (value){
                   if(value == null || value.isEmpty){
-                    return "Campo Obrigatório";
+                    return "Campo Obrigatório!";
                   }
                   return null;
                 } ,
@@ -55,13 +60,13 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
                 ),
                 validator: (value){
                   if(value == null || value.isEmpty){
-                    return "Campo Obrigatório";
+                    return "Campo Obrigatório!";
                   }
                   return null;
                 } ,
               ),
               DropdownButtonFormField<String>(
-                  hint: Text("Selecione um gênero"),
+                  hint: Text("Gênero"),
                   value: _generoSelecionado,
                   onChanged: (String? novoValor){
                     setState(() {
@@ -76,9 +81,30 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
                   }).toList(),
                 validator: (value){
                     if (value == null || value.isEmpty){
-                      return "Campo Obrigatório";
+                      return "Campo Obrigatório!";
                     }
                     return null;
+                },
+              ),
+              DropdownButtonFormField<String>(
+                hint: Text("Faixa Etária"),
+                value: _faixaEtariaSelecionada,
+                onChanged: (String? novoValor){
+                  setState(() {
+                    _faixaEtariaSelecionada = novoValor ?? '';
+                  });
+                },
+                items: _opcoesDeFaixaEtaria.map((String faixaEtaria){
+                  return DropdownMenuItem<String>(
+                    value: faixaEtaria,
+                    child: Text(faixaEtaria),
+                  );
+                }).toList(),
+                validator: (value){
+                  if (value == null || value.isEmpty){
+                    return "Campo Obrigatório!";
+                  }
+                  return null;
                 },
               ),
               TextFormField(
@@ -89,11 +115,18 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
                 ),
                 validator: (value){
                   if(value == null || value.isEmpty){
-                    return "Campo Obrigatório";
+                    return "Campo Obrigatório!";
                   }
                   return null;
                 } ,
               ),
+              RatingBar.builder(itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber), onRatingUpdate: (rating){
+                setState(() {
+                  _numEstrelas = rating;
+                });
+                print(_numEstrelas);
+              },
+                initialRating: 0.0, minRating: 0, direction: Axis.horizontal, allowHalfRating: true, itemCount: 5, itemSize: 20,),
               TextFormField(
                 controller: _edtAno,
                 keyboardType: TextInputType.text,
@@ -102,7 +135,7 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
                 ),
                 validator: (value){
                   if(value == null || value.isEmpty){
-                    return "Campo Obrigatório";
+                    return "Campo Obrigatório!";
                   }
                   return null;
                 } ,
@@ -115,7 +148,7 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
                 ),
                 validator: (value){
                   if(value == null || value.isEmpty){
-                    return "Campo Obrigatório";
+                    return "Campo Obrigatório!";
                   }
                   return null;
                 } ,
@@ -134,9 +167,10 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
               return;
             }
 
-            final pontuacao = double.tryParse(_edtPontuacao.text) ?? 0.0;
+            //final pontuacao = double.tryParse(_edtPontuacao.text) ?? 0.0;
+            final pontuacao = _numEstrelas*10/5;
 
-            _filmeController.adicionar(_edtTitulo.text, _edtUrlImagem.text, _generoSelecionado!, _edtFaixaEtaria.text, _edtDuracao.text, pontuacao, _edtDescricao.text, _edtAno.text);
+            _filmeController.adicionar(_edtTitulo.text, _edtUrlImagem.text, _generoSelecionado!, _faixaEtariaSelecionada!, _edtDuracao.text, pontuacao, _edtDescricao.text, _edtAno.text);
 
             print("Filme adicionado, exibindo SnackBar.");
             ScaffoldMessenger.of(context).showSnackBar(
