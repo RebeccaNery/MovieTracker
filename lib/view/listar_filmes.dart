@@ -64,7 +64,7 @@ class _ListarFilmesState extends State<ListarFilmes> {
               });
             });
           },
-child: const Icon(Icons.add),
+          child: const Icon(Icons.add),
           ),
     );
   }

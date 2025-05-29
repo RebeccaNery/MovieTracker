@@ -58,7 +58,7 @@ class _DetalheFilmeState extends State<DetalheFilme> {
                         initialRating: numEstrelas, minRating: 0, direction: Axis.horizontal, allowHalfRating: true, itemCount: 5, itemSize: 20,),
                     ],
                   ),
-SizedBox(height: 8,),
+              SizedBox(height: 8,),
               Row(
                 children: [
                   Expanded(child: Text(_filme.descricao)),

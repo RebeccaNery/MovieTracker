@@ -24,7 +24,7 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Cadstrar novo filme 🎬"),
+        title: Text("Cadastrar novo filme 🎬"),
       ),
       body: Container(
         margin: const EdgeInsets.all(8),
@@ -116,17 +116,28 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-          final valid = _key.currentState!.validate();
-          if(!valid){
-            return;
+          try{
+            print("Botão pressionado!");
+            final valid = _key.currentState!.validate();
+            print("Formulário válido: $valid");
+            if(!valid){
+              return;
+            }
+
+            final pontuacao = double.tryParse(_edtPontuacao.text) ?? 0.0;
+
+            _filmeController.adicionar(_edtTitulo.text, _edtUrlImagem.text, _edtGenero.text, _edtFaixaEtaria.text, _edtDuracao.text, pontuacao, _edtDescricao.text, _edtAno.text);
+
+            print("Filme adicionado, exibindo SnackBar.");
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Cadastrado com Sucesso"))
+            );
+
+            Navigator.pop(context);
+            print("Navegação concluída.");
+          }catch(e){
+            print("Ocorreu um erro: $e");
           }
-          _filmeController.adicionar(_edtTitulo.text, _edtUrlImagem.text, _edtGenero.text, _edtFaixaEtaria.text, _edtDuracao.text, double.parse(_edtPontuacao.text), _edtDescricao.text, _edtAno.text);
-
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Cadastrado com Sucesso"))
-          );
-
-          Navigator.pop(context);
         },
         child: const Icon(Icons.save),
       ),
