@@ -120,16 +120,24 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
                   return null;
                 } ,
               ),
-              RatingBar.builder(itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber), onRatingUpdate: (rating){
-                setState(() {
-                  _numEstrelas = rating;
-                });
-                print(_numEstrelas);
-              },
-                initialRating: 0.0, minRating: 0, direction: Axis.horizontal, allowHalfRating: true, itemCount: 5, itemSize: 20,),
+              SizedBox(height: 20,),
+              Row(
+                children: [
+                  Text("Nota:", style: TextStyle(fontSize: 18),),
+                  SizedBox(width: 8.0),
+                  RatingBar.builder(itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber), onRatingUpdate: (rating){
+                    setState(() {
+                      _numEstrelas = rating;
+                    });
+                    print(_numEstrelas);
+                  },
+                    initialRating: 0.0, minRating: 0, direction: Axis.horizontal, allowHalfRating: true, itemCount: 5, itemSize: 30,),
+                ],
+              ),
+              SizedBox(height: 20,),
               TextFormField(
                 controller: _edtAno,
-                keyboardType: TextInputType.text,
+                keyboardType: TextInputType.datetime,
                 decoration: const InputDecoration(
                     labelText: "Ano"
                 ),
