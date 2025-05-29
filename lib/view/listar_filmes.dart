@@ -93,12 +93,13 @@ class _ListarFilmesState extends State<ListarFilmes> {
                     Text(_filmes[index].titulo, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                     Text(_filmes[index].genero),
                     Text(_filmes[index].duracao),
-                    const SizedBox(width: 8),
+
                     const Spacer(),
                     RatingBar.builder(itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber), onRatingUpdate: (rating){
                       print(rating);
                     }, ignoreGestures: true,
-                      initialRating: numEstrelas, minRating: 0, direction: Axis.horizontal, allowHalfRating: true, itemCount: 5, itemSize: 20,),
+                      initialRating: numEstrelas, minRating: 0, direction: Axis.horizontal, allowHalfRating: true, itemCount: 5, itemSize: 30,),
+                    const SizedBox(height: 20),
 
                   ],
                 ),
