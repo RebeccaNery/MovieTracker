@@ -65,7 +65,7 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
                   value: _generoSelecionado,
                   onChanged: (String? novoValor){
                     setState(() {
-                      _generoSelecionado = novoValor;
+                      _generoSelecionado = novoValor ?? '';
                     });
                   },
                   items: _opcoesDeGenero.map((String genero){
