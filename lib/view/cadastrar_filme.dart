@@ -12,13 +12,15 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
   final _key = GlobalKey<FormState>();
   final _edtTitulo = TextEditingController();
   final _edtUrlImagem = TextEditingController();
-  final _edtGenero = TextEditingController();
+  //final _edtGenero = TextEditingController();
   final _edtFaixaEtaria = TextEditingController();
   final _edtDuracao = TextEditingController();
   final _edtPontuacao = TextEditingController();
   final _edtDescricao = TextEditingController();
   final _edtAno = TextEditingController();
   final _filmeController = FilmeController();
+  String _generoSelecionado = '';
+  final List<String> _opcoesDeGenero = ['Ação', 'Aventura', 'Comédia', 'Drama', 'Ficção Científica', 'Romance', 'Terror'];
 
   @override
   Widget build(BuildContext context) {
@@ -58,18 +60,20 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
                   return null;
                 } ,
               ),
-              TextFormField(
-                controller: _edtGenero,
-                keyboardType: TextInputType.text,
-                decoration: const InputDecoration(
-                    labelText: "Gênero"
-                ),
-                validator: (value){
-                  if(value == null || value.isEmpty){
-                    return "Campo Obrigatório";
-                  }
-                  return null;
-                } ,
+              DropdownButton<String>(
+                  hint: Text("Selecione um gênero"),
+                  value: _generoSelecionado,
+                  onChanged: (String? novoValor){
+                    setState(() {
+                      _generoSelecionado = novoValor;
+                    });
+                  },
+                  items: _opcoesDeGenero.map((String genero){
+                    return DropdownMenuItem<String>(
+                      value: genero,
+                      child: Text(genero),
+                    );
+                  }).toList(),
               ),
               TextFormField(
                 controller: _edtDuracao,
@@ -126,7 +130,7 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
 
             final pontuacao = double.tryParse(_edtPontuacao.text) ?? 0.0;
 
-            _filmeController.adicionar(_edtTitulo.text, _edtUrlImagem.text, _edtGenero.text, _edtFaixaEtaria.text, _edtDuracao.text, pontuacao, _edtDescricao.text, _edtAno.text);
+            _filmeController.adicionar(_edtTitulo.text, _edtUrlImagem.text, _generoSelecionado, _edtFaixaEtaria.text, _edtDuracao.text, pontuacao, _edtDescricao.text, _edtAno.text);
 
             print("Filme adicionado, exibindo SnackBar.");
             ScaffoldMessenger.of(context).showSnackBar(
