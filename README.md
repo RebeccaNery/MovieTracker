@@ -46,7 +46,7 @@ cd movie_tracker
 flutter pub get
 ```
 
-Execute o app:
+3. **Execute o app:**
 ```bash
 flutter run
 ```
