@@ -1,5 +1,5 @@
 class Filme {
-  String? id;
+  int? id;
   String urlImagem;
   String titulo;
   String genero;
