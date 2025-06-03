@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:movie_tracker/controller/filme_api_controller.dart';
-import 'package:movie_tracker/controller/filme_controller.dart';
 import 'package:movie_tracker/view/detalhar_filme.dart';
 
 import '../model/filme.dart';
@@ -15,7 +14,7 @@ class ListarFilmes extends StatefulWidget {
 }
 
 class _ListarFilmesState extends State<ListarFilmes> {
-  final _filmeController = FilmeController();
+  final _filmeApiController = FilmeApiController();
 
   //List<Filme> _filmes = [];
 
@@ -85,9 +84,7 @@ class _ListarFilmesState extends State<ListarFilmes> {
               },
             ),
           ).then((value) {
-            setState(() {
-              //filmes = _filmeController.findAll();
-            });
+            setState(() {});
           });
         },
         child: const Icon(Icons.add),

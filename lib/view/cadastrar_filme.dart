@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-import '../controller/filme_controller.dart';
+import '../controller/filme_api_controller.dart';
+import '../model/filme.dart';
 
 class CadastrarFilme extends StatefulWidget {
   const CadastrarFilme({super.key});
@@ -14,15 +15,10 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
   final _key = GlobalKey<FormState>();
   final _edtTitulo = TextEditingController();
   final _edtUrlImagem = TextEditingController();
-
-  //final _edtGenero = TextEditingController();
-  //final _edtFaixaEtaria = TextEditingController();
   final _edtDuracao = TextEditingController();
-
-  //final _edtPontuacao = TextEditingController();
   final _edtDescricao = TextEditingController();
   final _edtAno = TextEditingController();
-  final _filmeController = FilmeController();
+  final _filmeApiController = FilmeApiController();
   String? _generoSelecionado;
   final List<String> _opcoesDeGenero = [
     'Ação',
@@ -185,7 +181,7 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           try {
             print("Botão pressionado!");
             final valid = _key.currentState!.validate();
@@ -194,31 +190,63 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
               return;
             }
 
-            final pontuacao = _numEstrelas * 10 / 5;
+            final double pontuacaoParaApi = _numEstrelas * 10 / 5;
 
-            _filmeController.save(
-              _edtTitulo.text,
-              _edtUrlImagem.text,
-              _generoSelecionado!,
-              _faixaEtariaSelecionada!,
-              _edtDuracao.text,
-              pontuacao,
-              _edtDescricao.text,
-              _edtAno.text,
+            Filme novoFilme = Filme(
+              // 'id' não é necessário aqui, a API mockapi.io irá gerá-lo
+              titulo: _edtTitulo.text,
+              urlImagem: _edtUrlImagem.text,
+              genero: _generoSelecionado ?? "",
+              // Garanta que não seja nulo
+              faixaEtaria: _faixaEtariaSelecionada ?? "",
+              // Garanta que não seja nulo
+              duracao: _edtDuracao.text,
+              pontuacao: pontuacaoParaApi,
+              descricao: _edtDescricao.text,
+              ano: _edtAno.text,
             );
 
-            print("Filme adicionado, exibindo SnackBar.");
-
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Cadastrado com Sucesso!")),
+            print(
+              "[CADASTRO] Tentando salvar filme na API: ${novoFilme.titulo}",
             );
+            // Chame o método save do FilmeApiController
+            Filme? filmeSalvoNaApi = await _filmeApiController.save(novoFilme);
 
-            Navigator.pop(context);
-            print("Navegação concluída.");
+            if (filmeSalvoNaApi != null) {
+              print(
+                "[CADASTRO] Filme salvo na API com sucesso: ${filmeSalvoNaApi.titulo} (ID API: ${filmeSalvoNaApi.id})",
+              );
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Cadastrado com Sucesso na API!"),
+                  ),
+                );
+                Navigator.pop(
+                  context,
+                  true,
+                ); // Passa true para indicar que algo foi salvo
+              }
+            } else {
+              print("[CADASTRO] Falha ao salvar filme na API.");
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Erro ao cadastrar filme na API."),
+                  ),
+                );
+              }
+            }
           } catch (e) {
-            print("Ocorreu um erro: $e");
+            print("[CADASTRO] Ocorreu um erro: $e");
+            if (mounted) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text("Erro: $e")));
+            }
           }
         },
+
         child: const Icon(Icons.save),
       ),
     );
