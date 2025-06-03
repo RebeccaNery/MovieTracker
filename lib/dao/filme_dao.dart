@@ -11,7 +11,7 @@ class FilmeDao {
   Future<int?> save(Filme filme) async {
     final db = await dbHelper.initDB();
     try {
-      return await db.insert('filmes', filme.toMap());
+      return await db.insert('filmes', filme.toJson());
     } catch (e) {
       print(e);
       return null;
@@ -26,7 +26,7 @@ class FilmeDao {
       final listMap = await db.query('filmes');
       List<Filme> filmes = [];
       for (var map in listMap) {
-        filmes.add(Filme.fromMap(map));
+        filmes.add(Filme.fromJson(map));
       }
 
       return filmes;
