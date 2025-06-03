@@ -1,41 +1,39 @@
 import '../database/database_helper.dart';
 import '../model/filme.dart';
 
-class ContatoDao{
+class FilmeDao {
   late DatabaseHelper dbHelper;
 
-  ContatoDao() {
+  FilmesDao() {
     dbHelper = DatabaseHelper();
   }
 
-  Future<int?> save (Filme filme) async {
+  Future<int?> save(Filme filme) async {
     final db = await dbHelper.initDB();
-    try{
+    try {
       return await db.insert('filmes', filme.toMap());
-    }catch(e){
+    } catch (e) {
       print(e);
       return null;
-    }finally{
+    } finally {
       db.close();
     }
   }
 
-  Future<List<Filme>?> findAll() async{
+  Future<List<Filme>?> findAll() async {
     final db = await dbHelper.initDB();
-    try{
+    try {
       final listMap = await db.query('filmes');
       List<Filme> filmes = [];
-      for (var map in listMap){
+      for (var map in listMap) {
         filmes.add(Filme.fromMap(map));
       }
 
-    }catch(e){
+      return filmes;
+    } catch (e) {
       return null;
-
-    }finally{
+    } finally {
       db.close();
-
     }
   }
-
 }

@@ -1,8 +1,8 @@
-
+import '../dao/filme_dao.dart';
 import '../model/filme.dart';
 
-class FilmeService{
-  static final _filmes = [
+class FilmeService {
+  /*static final _filmes = [
     Filme(
       id: 1,
       titulo: 'A Origem',
@@ -36,13 +36,15 @@ class FilmeService{
       descricao: 'Um homem insatisfeito com a vida e com seu trabalho encontra um novo sentido ao participar de um clube de luta underground.',
       ano: '1999',
     )
-  ];
+  ];*/
 
-  List<Filme> get filmes{
-    return List.unmodifiable(_filmes);
+  final _filmeDao = FilmeDao();
+
+  Future<List<Filme>?> findAll() async {
+    return await _filmeDao.findAll();
   }
 
-  void adicionar(Filme filme){
-    _filmes.add(filme);
+  Future<int?> save(Filme filme) async {
+    return await _filmeDao.save(filme);
   }
 }
