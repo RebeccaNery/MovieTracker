@@ -86,7 +86,7 @@ class _ListarFilmesState extends State<ListarFilmes> {
             ),
           ).then((value) {
             setState(() {
-              filmes = _filmeController.findAll();
+              //filmes = _filmeController.findAll();
             });
           });
         },
