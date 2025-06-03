@@ -25,4 +25,25 @@ class FilmeApiController {
       throw HttpException("Erro ao consultar filmes: ${response.statusCode}");
     }
   }
+
+  Future<Filme> findById(int id) async {
+    final response = await http.get(
+      Uri.parse("${FilmeApiConfig.url}/filmes/$id"),
+      headers: FilmeApiConfig.headers,
+    );
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      return Filme.fromJson(jsonData);
+    } else {
+      throw HttpException("Erro ao consultar filme: ${response.statusCode}");
+  }
+
+    Future<Filme> save(Filme filme) async {
+      final response = await http.post(
+        Uri.parse("${FilmeApiConfig.url}/filmes"),
+        headers: FilmeApiConfig.headers,
+        body: filme.toJson(),
+      );
+    }
+
 }

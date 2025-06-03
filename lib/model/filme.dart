@@ -63,6 +63,23 @@ class Filme {
     );
   }
 
+  // --- MÉTODO toJson() CORRIGIDO PARA A API ---
+  Map<String, dynamic> toJson() {
+    final mapData = <String, dynamic>{
+      'titulo': titulo,
+      'urlImagem': urlImagem,
+      'genero': genero,
+      'faixaEtaria': faixaEtaria,
+      'duracao': duracao,
+      'pontuacao': pontuacao,
+      'descricao': descricao,
+      'ano': ano,
+      // O campo 'createdAt' também é gerado pela API, não o envie.
+    };
+
+    return mapData;
+  }
+
   @override
   String toString() {
     return "Filme(id: $id, urlImagem: $urlImagem, titulo: $titulo, genero: $genero, faixaEtaria: $faixaEtaria, duracao: $duracao, pontuacao: $pontuacao, descricao: $descricao, ano: $ano)";
