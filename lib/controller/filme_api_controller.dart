@@ -79,4 +79,50 @@ class FilmeApiController {
       return null; // Ou lançar uma exceção
     }
   }
+
+  Future<Filme?> update(Filme filme) async {
+    if (filme.id == null) {
+      // Assumindo que filme.id é String? para o ID da API
+      print(
+        "[API UPDATE] Erro: ID do filme é nulo ou vazio. Impossível atualizar.",
+      );
+      return null;
+    }
+
+    final Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json; charset=UTF-8',
+      ...(FilmeApiConfig.headers), // Usa os headers da config
+      'Content-Type': 'application/json; charset=UTF-8', // Garante Content-Type
+    };
+
+    try {
+      String corpoJson = jsonEncode(
+        filme.toJson(),
+      ); // toJson() não deve incluir o id se ele já está na URL
+      print(
+        "[API UPDATE] Enviando JSON para API (filme ID: ${filme.id}): $corpoJson",
+      );
+
+      final response = await http.put(
+        Uri.parse("${FilmeApiConfig.url}/filmes/${filme.id}"),
+        // Envia o ID na URL
+        headers: requestHeaders,
+        body: corpoJson,
+      );
+
+      if (response.statusCode == 200) {
+        // 200 OK para PUT bem-sucedido
+        print("[API UPDATE] Filme atualizado na API: ${response.body}");
+        return Filme.fromJson(jsonDecode(response.body));
+      } else {
+        print(
+          "[API UPDATE] Erro ao atualizar filme na API: ${response.statusCode} - ${response.body}",
+        );
+        return null;
+      }
+    } catch (e) {
+      print("[API UPDATE] Exceção ao tentar atualizar filme na API: $e");
+      return null;
+    }
+  }
 }

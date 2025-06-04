@@ -15,14 +15,76 @@ class ListarFilmes extends StatefulWidget {
 
 class _ListarFilmesState extends State<ListarFilmes> {
   final _filmeApiController = FilmeApiController();
+  Future<List<Filme>>? _listaDeFilmesFuture;
 
-  //List<Filme> _filmes = [];
-
-  /*@override
-  void initState(){
+  @override
+  void initState() {
     super.initState();
-    _filmes = _filmeController.getFilmes();
-  }*/
+    _carregarFilmesDaApi();
+  }
+
+  void _carregarFilmesDaApi() {
+    setState(() {
+      _listaDeFilmesFuture = _filmeApiController.findAll();
+    });
+  }
+
+  // Método para navegar para a tela de "Alterar" (Edição)
+  void _navegarParaAlterarFilme(BuildContext parentContext, Filme filme) {
+    Navigator.push(
+      parentContext, // Usa o contexto que tem o Navigator correto
+      MaterialPageRoute(
+        // Você precisará adaptar CadastrarFilme para aceitar um filme para edição
+        builder: (context) => CadastrarFilme(filmeParaEditar: filme),
+      ),
+    ).then((foiModificado) {
+      // Se CadastrarFilme retornar true (ou qualquer valor que indique modificação), atualiza a lista
+      if (foiModificado == true) {
+        _carregarFilmesDaApi();
+      }
+    });
+  }
+
+  // Método para mostrar o menu de opções na parte inferior
+  void _mostrarOpcoesDoFilme(BuildContext parentContext, Filme filme) {
+    showModalBottomSheet(
+      context: parentContext, // Contexto do ListarFilmes para o BottomSheet
+      builder: (BuildContext sheetContext) {
+        // Contexto interno do BottomSheet
+        return SafeArea(
+          // Garante que não fique sob elementos da UI do sistema
+          child: Wrap(
+            // Faz o BottomSheet se ajustar à altura do conteúdo
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.visibility),
+                // Ícone para "Exibir Dados"
+                title: const Text('Exibir Dados'),
+                onTap: () {
+                  Navigator.pop(sheetContext); // Fecha o BottomSheet
+                  Navigator.push(
+                    parentContext,
+                    // Usa o contexto do ListarFilmes para navegar
+                    MaterialPageRoute(
+                      builder: (context) => DetalheFilme(filme: filme),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.edit), // Ícone para "Alterar"
+                title: const Text('Alterar'),
+                onTap: () {
+                  Navigator.pop(sheetContext); // Fecha o BottomSheet
+                  _navegarParaAlterarFilme(parentContext, filme);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,14 +119,14 @@ class _ListarFilmesState extends State<ListarFilmes> {
         ],
       ),
       body: FutureBuilder(
-        future: FilmeApiController().findAll(),
+        future: _listaDeFilmesFuture,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final filmes = snapshot.data;
             return ListView.builder(
               itemCount: filmes!.length,
-              itemBuilder: (context, index) {
-                return buildItemList(filmes[index]);
+              itemBuilder: (itemBuilderContext, index) {
+                return buildItemList(itemBuilderContext, filmes[index]);
               },
             );
           } else if (snapshot.hasError) {
@@ -83,8 +145,10 @@ class _ListarFilmesState extends State<ListarFilmes> {
                 return const CadastrarFilme();
               },
             ),
-          ).then((value) {
-            setState(() {});
+          ).then((foiAdicionado) {
+            if (foiAdicionado == true) {
+              _carregarFilmesDaApi();
+            }
           });
         },
         child: const Icon(Icons.add),
@@ -92,18 +156,12 @@ class _ListarFilmesState extends State<ListarFilmes> {
     );
   }
 
-  Widget buildItemList(Filme filme) {
+  Widget buildItemList(BuildContext context, Filme filme) {
     final double numEstrelas = (filme.pontuacao / 10 * 5);
 
     return GestureDetector(
       onTap: () {
-        final Filme filmeClicado = filme;
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DetalheFilme(filme: filmeClicado),
-          ),
-        );
+        _mostrarOpcoesDoFilme(context, filme);
       },
       child: Card(
         margin: EdgeInsets.all(8.0),
