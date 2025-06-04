@@ -114,7 +114,28 @@ class _ListarFilmesState extends State<ListarFilmes> {
             children: [
               Container(
                 margin: EdgeInsets.all(5.0),
-                child: Image.network(filme.urlImagem, width: 150),
+                child: Image.network(
+                  filme.urlImagem,
+                  width: 150,
+                  errorBuilder: (
+                    BuildContext context,
+                    Object exception,
+                    StackTrace? stackTrace,
+                  ) {
+                    // Esta função é chamada se houver um erro ao carregar a imagem da rede
+                    print(
+                      "Erro ao carregar imagem da rede: ${filme.urlImagem}, Erro: $exception",
+                    );
+                    return Image.asset(
+                      'assets/images/placeholder_filme.jpg',
+                      // <<-- CAMINHO PARA SUA IMAGEM PADRÃO
+                      width: 150,
+                      fit:
+                          BoxFit
+                              .cover, // Para o placeholder também cobrir o espaço
+                    );
+                  },
+                ),
               ),
               const SizedBox(width: 16),
               Container(
