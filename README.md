@@ -9,7 +9,6 @@ Um aplicativo Flutter para gerenciar seu catálogo pessoal de filmes. Com o Movi
 - ✅ Cadastro de filmes com título, gênero, ano, nota e descrição.
 - 🎞 Listagem de todos os filmes cadastrados
 - ✏️ Edição e deleção de filmes
-- 🔍 Busca rápida por título
 - ☁️ Armazenamento de dados e persistência através de uma API REST (mockapi.io).
 
 ---
@@ -50,18 +49,24 @@ flutter pub get
 3.  **Configurar a API (Importante):**
     Este projeto utiliza [mockapi.io](https://mockapi.io/) para simular um backend.
 
-    * **Configurando sua Própria API mockapi.io):**
-        a. Crie uma conta em [mockapi.io](https://mockapi.io/).
-        b. Crie um novo projeto.
-        c. Dentro do projeto, crie um recurso (endpoint) chamado `filmes` (ou o nome que estiver no `FilmeApiConfig.url` após a base).
-        d. Configure os campos (schema) para este recurso `filmes` para que correspondam ao modelo `Filme` no app (ex: `titulo` (string), `urlImagem` (string), `genero` (string), `faixaEtaria` (string), `duracao` (string), `pontuacao` (number), `descricao` (string), `ano` (string)). O mockapi.io adicionará automaticamente campos como `id` (string) e `createdAt` (datetime string).
-        e. Abra o arquivo `lib/config/filme_api_config.dart` no projeto.
-        f. Atualize a constante `url` com a URL base do seu endpoint no mockapi.io. Por exemplo:
-           ```dart
-           static const url = "https://SEU_ID_DE_PROJETO.mockapi.io/SEU_ENDPOINT_PRINCIPAL_SE_HOUVER/v1"; // E os métodos usarão /filmes
-           ```
+     **Configurando sua Própria API mockapi.io):**
+    
+    a. Crie uma conta em [mockapi.io](https://mockapi.io/).
+      
+    b. Crie um novo projeto.
+    
+    c. Dentro do projeto, crie um recurso (endpoint) chamado `filmes` (ou o nome que estiver no `FilmeApiConfig.url` após a base).
+              
+    d. Configure os campos (schema) para este recurso `filmes` para que correspondam ao modelo `Filme` no app (ex: `titulo` (string), `urlImagem` (string), `genero` (string), `faixaEtaria` (string), `duracao` (string), `pontuacao` (number), `descricao` (string), `ano` (string)). O mockapi.io adicionará automaticamente campos como `id` (string) e `createdAt` (datetime string).
+    
+    e. Abra o arquivo `lib/config/filme_api_config.dart` no projeto.
+    
+    f. Atualize a constante `url` com a URL base do seu endpoint no mockapi.io. Por exemplo:
+               ```dart
+               static const url = "https://SEU_ID_DE_PROJETO.mockapi.io/SEU_ENDPOINT_PRINCIPAL_SE_HOUVER/v1"; // E os métodos usarão /filmes
+               ```
 
-4. **Execute o app:**
+5. **Execute o app:**
 ```bash
 flutter run
 ```
