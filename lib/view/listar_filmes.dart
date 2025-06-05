@@ -15,7 +15,11 @@ class ListarFilmes extends StatefulWidget {
 
 class _ListarFilmesState extends State<ListarFilmes> {
   final _filmeApiController = FilmeApiController();
-  Future<List<Filme>>? _listaDeFilmesFuture;
+
+  //Future<List<Filme>>? _listaDeFilmesFuture;
+  List<Filme> _filmesExibidos = [];
+  bool _isLoading = true;
+  String? _erroAoCarregar;
 
   @override
   void initState() {
@@ -23,10 +27,31 @@ class _ListarFilmesState extends State<ListarFilmes> {
     _carregarFilmesDaApi();
   }
 
-  void _carregarFilmesDaApi() {
-    setState(() {
-      _listaDeFilmesFuture = _filmeApiController.findAll();
-    });
+  // Ajuste o método _carregarFilmesDaApi:
+  Future<void> _carregarFilmesDaApi({bool mostrarLoading = true}) async {
+    if (mounted && mostrarLoading) {
+      setState(() {
+        _isLoading = true;
+        _erroAoCarregar = null; // Limpa erro anterior
+      });
+    }
+    try {
+      final filmesDaApi = await _filmeApiController.findAll();
+      if (mounted) {
+        setState(() {
+          _filmesExibidos = filmesDaApi; // Popula a lista local
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _erroAoCarregar = e.toString();
+          _isLoading = false;
+        });
+      }
+      print("Erro ao carregar filmes da API: $e");
+    }
   }
 
   // Método para navegar para a tela de "Alterar" (Edição)
@@ -86,99 +111,73 @@ class _ListarFilmesState extends State<ListarFilmes> {
     );
   }
 
-  // --- MÉTODO PARA CONFIRMAR E EXECUTAR A DELEÇÃO ---
-  Future<void> _confirmarEDeletarFilme(
+  Future<void> _processarDelecaoNaApiEAtualizarUI(
     BuildContext scaffoldContext,
-    Filme filme,
+    Filme filmeParaDeletar,
+    int indiceOriginal,
   ) async {
-    // Garante que o filme tem um ID (da API, que no seu modelo Filme é String?)
-    if (filme.id == null) {
-      // No seu modelo Filme, o id é int? mas o id da API é String.
-      // Se filme.id armazena o ID numérico da API:
-      print("[DELETAR] ID do filme é nulo, não é possível deletar.");
+    if (mounted) {}
+
+    // 2. Tente deletar da API
+    if (filmeParaDeletar.id == null) {
       ScaffoldMessenger.of(scaffoldContext).showSnackBar(
         const SnackBar(
-          content: Text("Erro: ID do filme inválido para deleção."),
+          content: Text("Erro: ID do filme inválido para deleção na API."),
         ),
       );
+      _carregarFilmesDaApi(mostrarLoading: false); // Restaura a lista
       return;
     }
-    int? idApiParaDeletar = filme.id;
+    int? idApiParaDeletar = filmeParaDeletar.id;
 
-    bool confirmar =
-        await showDialog(
-          context:
-              scaffoldContext, // Usa o contexto do Scaffold da ListarFilmes
-          builder: (BuildContext dialogContext) {
-            return AlertDialog(
-              title: const Text("Confirmar Deleção"),
+    try {
+      print("[DELETAR API] Tentando deletar filme ID: $idApiParaDeletar...");
+      bool sucessoNaApi = await _filmeApiController.delete(idApiParaDeletar);
+
+      if (mounted) {
+        if (sucessoNaApi) {
+          ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+            SnackBar(
               content: Text(
-                "Tem certeza que deseja deletar o filme '${filme.titulo}'? Esta ação não pode ser desfeita.",
+                "'${filmeParaDeletar.titulo}' deletado com sucesso!",
               ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text("Cancelar"),
-                  onPressed: () => Navigator.of(dialogContext).pop(false),
-                ),
-                TextButton(
-                  child: const Text(
-                    "Deletar",
-                    style: TextStyle(color: Colors.redAccent),
-                  ),
-                  onPressed: () => Navigator.of(dialogContext).pop(true),
-                ),
-              ],
-            );
-          },
-        ) ??
-        false; // Se o diálogo for dispensado, considera como false
-
-    if (confirmar) {
-      try {
-        print(
-          "[DELETAR] Usuário confirmou. Tentando deletar filme ID: $idApiParaDeletar da API...",
-        );
-        // Chame o método delete do seu FilmeApiController
-        // Este método deve existir no seu _apiController e fazer a requisição DELETE
-        bool sucessoNaDelecao = await _filmeApiController.delete(
-          idApiParaDeletar,
-        );
-
-        if (mounted) {
-          // Verifica se o widget ainda está na árvore
-          if (sucessoNaDelecao) {
-            ScaffoldMessenger.of(scaffoldContext).showSnackBar(
-              SnackBar(
-                content: Text("'${filme.titulo}' deletado com sucesso!"),
+            ),
+          );
+          // Como o item já foi "dispensado" visualmente e a deleção na API foi um sucesso,
+          // precisamos garantir que nossa lista de dados local (_filmesExibidos) também
+          // não o contenha mais para a próxima reconstrução.
+          // A chamada _carregarFilmesDaApi() abaixo no finally já fará isso.
+          // Se você quisesse uma remoção local imediata sem esperar o _carregarFilmesDaApi,
+          // você faria:
+          // setState(() {
+          //   _filmesExibidos.removeWhere((f) => f.id == filmeParaDeletar.id);
+          // });
+        } else {
+          ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+            SnackBar(
+              content: Text(
+                "Falha ao deletar '${filmeParaDeletar.titulo}' da API.",
               ),
-            );
-            // A lista será atualizada no bloco finally abaixo
-          } else {
-            ScaffoldMessenger.of(scaffoldContext).showSnackBar(
-              SnackBar(
-                content: Text("Falha ao deletar '${filme.titulo}' da API."),
-              ),
-            );
-          }
-        }
-      } catch (e) {
-        print("[DELETAR] Erro ao deletar filme via API: $e");
-        if (mounted) {
-          ScaffoldMessenger.of(
-            scaffoldContext,
-          ).showSnackBar(SnackBar(content: Text("Erro ao deletar: $e")));
-        }
-      } finally {
-        // Sempre recarrega a lista para refletir o estado atual da API,
-        // independentemente do sucesso ou falha da tentativa de deleção local.
-        if (mounted) {
-          _carregarFilmesDaApi();
+            ),
+          );
+          // Se falhou na API, o item não foi deletado lá. Recarregar a lista da API
+          // fará o item "reaparecer" se ele foi removido otimisticamente da UI pelo Dismissible.
         }
       }
-    } else {
-      print("[DELETAR] Usuário cancelou a deleção.");
-
-      _carregarFilmesDaApi();
+    } catch (e) {
+      print("[DELETAR API] Erro ao deletar filme via API: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(
+          scaffoldContext,
+        ).showSnackBar(SnackBar(content: Text("Erro ao deletar: $e")));
+      }
+    } finally {
+      // Sempre recarregue a lista da API para garantir consistência após a tentativa de deleção.
+      // Isso irá remover o item se ele foi deletado com sucesso na API,
+      // ou adicioná-lo de volta se a deleção na API falhou mas o Dismissible o removeu visualmente.
+      if (mounted) {
+        _carregarFilmesDaApi(mostrarLoading: false);
+      }
     }
   }
 
@@ -214,46 +213,94 @@ class _ListarFilmesState extends State<ListarFilmes> {
           ),
         ],
       ),
-      body: FutureBuilder(
-        future: _listaDeFilmesFuture,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final filmes = snapshot.data;
-            return ListView.builder(
-              itemCount: filmes!.length,
-              itemBuilder: (itemBuilderContext, index) {
-                return Dismissible(
-                  key: Key(filmes[index].id.toString()),
-                  direction: DismissDirection.endToStart,
-                  onDismissed: (direction) {
-                    print(
-                      "Item '${filmes[index].titulo}' (ID: ${filmes[index].id}) foi dispensado. Chamando deleção.",
-                    );
-                    _confirmarEDeletarFilme(context, filmes[index]);
-                  },
-                  background: Container(
-                    color: Colors.redAccent,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    alignment: Alignment.centerRight,
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Icon(Icons.delete, color: Colors.white),
-                        Text("Deletar", style: TextStyle(color: Colors.white)),
-                      ],
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _erroAoCarregar != null
+              ? Center(child: Text("Erro ao carregar filmes: $_erroAoCarregar"))
+              : _filmesExibidos.isEmpty
+              ? const Center(
+                child: Text(
+                  "Nenhum filme encontrado. Clique em + para adicionar.",
+                ),
+              )
+              : ListView.builder(
+                itemCount: _filmesExibidos.length,
+                itemBuilder: (itemBuilderContext, index) {
+                  final filme = _filmesExibidos[index];
+                  return Dismissible(
+                    key: Key(filme.id.toString()),
+                    direction: DismissDirection.endToStart,
+                    confirmDismiss: (DismissDirection direction) async {
+                      return await showDialog<bool>(
+                            context:
+                                context, // Contexto do Scaffold de ListarFilmes
+                            builder: (BuildContext dialogContext) {
+                              return AlertDialog(
+                                title: const Text("Confirmar Deleção"),
+                                content: Text(
+                                  "Tem certeza que deseja deletar o filme '${filme.titulo}'?",
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text("Cancelar"),
+                                    onPressed:
+                                        () => Navigator.of(
+                                          dialogContext,
+                                        ).pop(false),
+                                  ),
+                                  TextButton(
+                                    child: const Text(
+                                      "Deletar",
+                                      style: TextStyle(color: Colors.redAccent),
+                                    ),
+                                    onPressed:
+                                        () => Navigator.of(
+                                          dialogContext,
+                                        ).pop(true),
+                                  ),
+                                ],
+                              );
+                            },
+                          ) ??
+                          false; // Se o diálogo for dispensado sem escolha, assume false
+                    },
+                    onDismissed: (direction) {
+                      // Esta função só será chamada se confirmDismiss retornar true.
+                      print(
+                        "Item '${filme.titulo}' (ID: ${filme.id}) confirmado para deleção. Processando...",
+                      );
+                      _processarDelecaoNaApiEAtualizarUI(
+                        context,
+                        filme,
+                        index,
+                      ); // Passa o índice original
+                    },
+                    // onDismissed: (direction) {
+                    //   print(
+                    //     "Item '${filme.titulo}' (ID: ${filme.id}) foi dispensado. Chamando deleção.",
+                    //   );
+                    //   _confirmarEDeletarFilme(context, filme);
+                    // },
+                    background: Container(
+                      color: Colors.redAccent,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      alignment: Alignment.centerRight,
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Icon(Icons.delete, color: Colors.white),
+                          Text(
+                            "Deletar",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  child: buildItemList(itemBuilderContext, filmes[index]),
-                );
-              },
-            );
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
+                    child: buildItemList(itemBuilderContext, filme),
+                  );
+                },
+              ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
