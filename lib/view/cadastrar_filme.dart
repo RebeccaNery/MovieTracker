@@ -298,72 +298,11 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          try {
-            print("Botão pressionado!");
-            final valid = _key.currentState!.validate();
-            print("Formulário válido: $valid");
-            if (!valid) {
-              return;
-            }
-
-            final double pontuacaoParaApi = _numEstrelas * 10 / 5;
-
-            Filme novoFilme = Filme(
-              // 'id' não é necessário aqui, a API mockapi.io irá gerá-lo
-              titulo: _edtTitulo.text,
-              urlImagem: _edtUrlImagem.text,
-              genero: _generoSelecionado ?? "",
-              // Garanta que não seja nulo
-              faixaEtaria: _faixaEtariaSelecionada ?? "",
-              // Garanta que não seja nulo
-              duracao: _edtDuracao.text,
-              pontuacao: pontuacaoParaApi,
-              descricao: _edtDescricao.text,
-              ano: _edtAno.text,
-            );
-
-            print(
-              "[CADASTRO] Tentando salvar filme na API: ${novoFilme.titulo}",
-            );
-            // Chame o método save do FilmeApiController
-            Filme? filmeSalvoNaApi = await _filmeApiController.save(novoFilme);
-
-            if (filmeSalvoNaApi != null) {
-              print(
-                "[CADASTRO] Filme salvo na API com sucesso: ${filmeSalvoNaApi.titulo} (ID API: ${filmeSalvoNaApi.id})",
-              );
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Cadastrado com Sucesso na API!"),
-                  ),
-                );
-                Navigator.pop(
-                  context,
-                  true,
-                ); // Passa true para indicar que algo foi salvo
-              }
-            } else {
-              print("[CADASTRO] Falha ao salvar filme na API.");
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Erro ao cadastrar filme na API."),
-                  ),
-                );
-              }
-            }
-          } catch (e) {
-            print("[CADASTRO] Ocorreu um erro: $e");
-            if (mounted) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text("Erro: $e")));
-            }
-          }
+          _salvarOuAtualizarFilme();
         },
 
-        child: const Icon(Icons.save),
+        child: Icon(_modoEdicao ? Icons.check : Icons.save),
+        tooltip: _modoEdicao ? "Atualizar" : "Cadastrar",
       ),
     );
   }
