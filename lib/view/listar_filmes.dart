@@ -86,6 +86,102 @@ class _ListarFilmesState extends State<ListarFilmes> {
     );
   }
 
+  // --- MÉTODO PARA CONFIRMAR E EXECUTAR A DELEÇÃO ---
+  Future<void> _confirmarEDeletarFilme(
+    BuildContext scaffoldContext,
+    Filme filme,
+  ) async {
+    // Garante que o filme tem um ID (da API, que no seu modelo Filme é String?)
+    if (filme.id == null) {
+      // No seu modelo Filme, o id é int? mas o id da API é String.
+      // Se filme.id armazena o ID numérico da API:
+      print("[DELETAR] ID do filme é nulo, não é possível deletar.");
+      ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+        const SnackBar(
+          content: Text("Erro: ID do filme inválido para deleção."),
+        ),
+      );
+      return;
+    }
+    int? idApiParaDeletar = filme.id;
+
+    bool confirmar =
+        await showDialog(
+          context:
+              scaffoldContext, // Usa o contexto do Scaffold da ListarFilmes
+          builder: (BuildContext dialogContext) {
+            return AlertDialog(
+              title: const Text("Confirmar Deleção"),
+              content: Text(
+                "Tem certeza que deseja deletar o filme '${filme.titulo}'? Esta ação não pode ser desfeita.",
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text("Cancelar"),
+                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                ),
+                TextButton(
+                  child: const Text(
+                    "Deletar",
+                    style: TextStyle(color: Colors.redAccent),
+                  ),
+                  onPressed: () => Navigator.of(dialogContext).pop(true),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false; // Se o diálogo for dispensado, considera como false
+
+    if (confirmar) {
+      try {
+        print(
+          "[DELETAR] Usuário confirmou. Tentando deletar filme ID: $idApiParaDeletar da API...",
+        );
+        // Chame o método delete do seu FilmeApiController
+        // Este método deve existir no seu _apiController e fazer a requisição DELETE
+        bool sucessoNaDelecao = await _filmeApiController.delete(
+          idApiParaDeletar,
+        );
+
+        if (mounted) {
+          // Verifica se o widget ainda está na árvore
+          if (sucessoNaDelecao) {
+            ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+              SnackBar(
+                content: Text("'${filme.titulo}' deletado com sucesso!"),
+              ),
+            );
+            // A lista será atualizada no bloco finally abaixo
+          } else {
+            ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+              SnackBar(
+                content: Text("Falha ao deletar '${filme.titulo}' da API."),
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        print("[DELETAR] Erro ao deletar filme via API: $e");
+        if (mounted) {
+          ScaffoldMessenger.of(
+            scaffoldContext,
+          ).showSnackBar(SnackBar(content: Text("Erro ao deletar: $e")));
+        }
+      } finally {
+        // Sempre recarrega a lista para refletir o estado atual da API,
+        // independentemente do sucesso ou falha da tentativa de deleção local.
+        if (mounted) {
+          _carregarFilmesDaApi();
+        }
+      }
+    } else {
+      print("[DELETAR] Usuário cancelou a deleção.");
+
+      _carregarFilmesDaApi();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,7 +222,29 @@ class _ListarFilmesState extends State<ListarFilmes> {
             return ListView.builder(
               itemCount: filmes!.length,
               itemBuilder: (itemBuilderContext, index) {
-                return buildItemList(itemBuilderContext, filmes[index]);
+                return Dismissible(
+                  key: Key(filmes[index].id.toString()),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (direction) {
+                    print(
+                      "Item '${filmes[index].titulo}' (ID: ${filmes[index].id}) foi dispensado. Chamando deleção.",
+                    );
+                    _confirmarEDeletarFilme(context, filmes[index]);
+                  },
+                  background: Container(
+                    color: Colors.redAccent,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    alignment: Alignment.centerRight,
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Icon(Icons.delete, color: Colors.white),
+                        Text("Deletar", style: TextStyle(color: Colors.white)),
+                      ],
+                    ),
+                  ),
+                  child: buildItemList(itemBuilderContext, filmes[index]),
+                );
               },
             );
           } else if (snapshot.hasError) {

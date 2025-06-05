@@ -125,4 +125,20 @@ class FilmeApiController {
       return null;
     }
   }
+
+  Future<bool> delete(int? id) async {
+    final response = await http.delete(
+      Uri.parse("${FilmeApiConfig.url}/filmes/$id"),
+      headers: FilmeApiConfig.headers,
+    );
+    if (response.statusCode == 200) {
+      print("[API DELETE] Filme deletado com sucesso na API: $id");
+      return true;
+    } else {
+      print(
+        "[API DELETE] Erro ao deletar filme na API: ${response.statusCode} - ${response.body}",
+      );
+      return false;
+    }
+  }
 }
