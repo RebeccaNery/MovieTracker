@@ -26,7 +26,6 @@ class _ListarFilmesState extends State<ListarFilmes> {
     _carregarFilmesDaApi();
   }
 
-  // Ajuste o método _carregarFilmesDaApi:
   Future<void> _carregarFilmesDaApi({bool mostrarLoading = true}) async {
     if (mounted && mostrarLoading) {
       setState(() {
