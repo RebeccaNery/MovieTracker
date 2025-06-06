@@ -29,6 +29,8 @@ Um aplicativo Flutter para gerenciar seu catálogo pessoal de filmes. Com o Movi
 |------------------|------------------|
 | ![list](assets/screenshots/list.png) | ![form](assets/screenshots/form.png) |
 
+![Demonstração do App](assets/gif-movietracker.gif)
+
 ---
 
 ## 🚀 Como Executar
