@@ -260,7 +260,7 @@ class _CadastrarFilmeState extends State<CadastrarFilme> {
                       });
                       print(_numEstrelas);
                     },
-                    initialRating: 0.0,
+                    initialRating: _numEstrelas,
                     minRating: 0,
                     direction: Axis.horizontal,
                     allowHalfRating: true,

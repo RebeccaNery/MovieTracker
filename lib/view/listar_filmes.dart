@@ -117,7 +117,6 @@ class _ListarFilmesState extends State<ListarFilmes> {
   ) async {
     if (mounted) {}
 
-    // 2. Tente deletar da API
     if (filmeParaDeletar.id == null) {
       ScaffoldMessenger.of(scaffoldContext).showSnackBar(
         const SnackBar(
@@ -142,15 +141,6 @@ class _ListarFilmesState extends State<ListarFilmes> {
               ),
             ),
           );
-          // Como o item já foi "dispensado" visualmente e a deleção na API foi um sucesso,
-          // precisamos garantir que nossa lista de dados local (_filmesExibidos) também
-          // não o contenha mais para a próxima reconstrução.
-          // A chamada _carregarFilmesDaApi() abaixo no finally já fará isso.
-          // Se você quisesse uma remoção local imediata sem esperar o _carregarFilmesDaApi,
-          // você faria:
-          // setState(() {
-          //   _filmesExibidos.removeWhere((f) => f.id == filmeParaDeletar.id);
-          // });
         } else {
           ScaffoldMessenger.of(scaffoldContext).showSnackBar(
             SnackBar(
@@ -159,8 +149,6 @@ class _ListarFilmesState extends State<ListarFilmes> {
               ),
             ),
           );
-          // Se falhou na API, o item não foi deletado lá. Recarregar a lista da API
-          // fará o item "reaparecer" se ele foi removido otimisticamente da UI pelo Dismissible.
         }
       }
     } catch (e) {
@@ -171,9 +159,6 @@ class _ListarFilmesState extends State<ListarFilmes> {
         ).showSnackBar(SnackBar(content: Text("Erro ao deletar: $e")));
       }
     } finally {
-      // Sempre recarregue a lista da API para garantir consistência após a tentativa de deleção.
-      // Isso irá remover o item se ele foi deletado com sucesso na API,
-      // ou adicioná-lo de volta se a deleção na API falhou mas o Dismissible o removeu visualmente.
       if (mounted) {
         _carregarFilmesDaApi(mostrarLoading: false);
       }
@@ -232,8 +217,7 @@ class _ListarFilmesState extends State<ListarFilmes> {
                     direction: DismissDirection.endToStart,
                     confirmDismiss: (DismissDirection direction) async {
                       return await showDialog<bool>(
-                            context:
-                                context, // Contexto do Scaffold de ListarFilmes
+                            context: context,
                             builder: (BuildContext dialogContext) {
                               return AlertDialog(
                                 title: const Text("Confirmar Deleção"),
@@ -269,18 +253,8 @@ class _ListarFilmesState extends State<ListarFilmes> {
                       print(
                         "Item '${filme.titulo}' (ID: ${filme.id}) confirmado para deleção. Processando...",
                       );
-                      _processarDelecaoNaApiEAtualizarUI(
-                        context,
-                        filme,
-                        index,
-                      ); // Passa o índice original
+                      _processarDelecaoNaApiEAtualizarUI(context, filme, index);
                     },
-                    // onDismissed: (direction) {
-                    //   print(
-                    //     "Item '${filme.titulo}' (ID: ${filme.id}) foi dispensado. Chamando deleção.",
-                    //   );
-                    //   _confirmarEDeletarFilme(context, filme);
-                    // },
                     background: Container(
                       color: Colors.redAccent,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -350,7 +324,6 @@ class _ListarFilmesState extends State<ListarFilmes> {
                     );
                     return Image.asset(
                       'assets/images/placeholder_filme.jpg',
-                      // <<-- CAMINHO PARA SUA IMAGEM PADRÃO
                       width: 150,
                       fit:
                           BoxFit
