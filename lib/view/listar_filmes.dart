@@ -16,7 +16,6 @@ class ListarFilmes extends StatefulWidget {
 class _ListarFilmesState extends State<ListarFilmes> {
   final _filmeApiController = FilmeApiController();
 
-  //Future<List<Filme>>? _listaDeFilmesFuture;
   List<Filme> _filmesExibidos = [];
   bool _isLoading = true;
   String? _erroAoCarregar;

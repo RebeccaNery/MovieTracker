@@ -9,6 +9,7 @@ import '../model/filme.dart';
 class FilmeApiController {
   Future<List<Filme>> findAll() async {
     final response = await http.get(
+      //GET - pegar filme
       Uri.parse("${FilmeApiConfig.url}/filmes"),
       headers: FilmeApiConfig.headers,
     );
@@ -41,20 +42,17 @@ class FilmeApiController {
 
   Future<Filme?> save(Filme filme) async {
     // Retornar Filme? é uma boa prática
-    // Os headers são diretamente da sua FilmeApiConfig.
-    // FilmeApiConfig.headers já define "Content-Type": "application/json".
     final Map<String, String> requestHeaders = FilmeApiConfig.headers;
 
     try {
-      // filme.toJson() deve retornar um Map<String, dynamic>
       // para ser enviado à API (sem o 'id' se for um novo filme e a API gerar o ID).
       String corpoJson = jsonEncode(filme.toJson());
       print("[API Controller - SAVE] Enviando JSON: $corpoJson");
 
       final response = await http.post(
-        // Usa FilmeApiConfig.url e adiciona o endpoint /filmes
+        //POST - enviar filme
         Uri.parse("${FilmeApiConfig.url}/filmes"),
-        headers: requestHeaders, // Usa os headers da FilmeApiConfig
+        headers: requestHeaders,
         body: corpoJson,
       );
 
@@ -70,13 +68,13 @@ class FilmeApiController {
         print(
           "[API Controller - SAVE] Erro ao salvar filme na API: ${response.statusCode} - ${response.body}",
         );
-        return null; // Ou lançar uma exceção, dependendo da sua estratégia de erro
+        return null;
       }
     } catch (e) {
       print(
         "[API Controller - SAVE] Exceção ao tentar salvar filme na API: $e",
       );
-      return null; // Ou lançar uma exceção
+      return null;
     }
   }
 
@@ -90,7 +88,6 @@ class FilmeApiController {
     }
 
     final Map<String, String> requestHeaders = {
-      'Content-Type': 'application/json; charset=UTF-8',
       ...(FilmeApiConfig.headers), // Usa os headers da config
       'Content-Type': 'application/json; charset=UTF-8', // Garante Content-Type
     };
@@ -104,6 +101,7 @@ class FilmeApiController {
       );
 
       final response = await http.put(
+        // PUT - atualizar dados
         Uri.parse("${FilmeApiConfig.url}/filmes/${filme.id}"),
         // Envia o ID na URL
         headers: requestHeaders,
@@ -128,6 +126,7 @@ class FilmeApiController {
 
   Future<bool> delete(int? id) async {
     final response = await http.delete(
+      // DELETE
       Uri.parse("${FilmeApiConfig.url}/filmes/$id"),
       headers: FilmeApiConfig.headers,
     );

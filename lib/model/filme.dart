@@ -21,7 +21,6 @@ class Filme {
     required this.ano,
   });
 
-  // Dentro da classe Filme em model/filme.dart
   factory Filme.fromJson(Map<String, dynamic> json) {
     String? idDaApiString = json['id'] as String?;
     return Filme(
@@ -38,7 +37,6 @@ class Filme {
     );
   }
 
-  // --- MÉTODO toJson() CORRIGIDO PARA A API ---
   Map<String, dynamic> toJson() {
     final mapData = <String, dynamic>{
       'titulo': titulo,
@@ -49,7 +47,7 @@ class Filme {
       'pontuacao': pontuacao,
       'descricao': descricao,
       'ano': ano,
-      // O campo 'createdAt' também é gerado pela API, não o envie.
+      // O campo 'createdAt' também é gerado pela API, não enviar.
     };
 
     return mapData;
